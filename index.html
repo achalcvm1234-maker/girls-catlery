@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Online | Storefront</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Logo image & icon styling inside storefront navbar */
+        .logo img {
+            height: 35px;
+            width: 35px;
+            object-fit: contain;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--primary-color, #ff416c);
+            text-decoration: none;
+        }
+        .logo-icon {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(255, 65, 108, 0.3);
+        }
+        /* Nav tabs styling for icons */
+        nav ul li a, nav ul li span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🛍️</div>
+            <span>Shopping Online</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a onclick="openContactModal()">✉️ Contact Us</a></li>
+                <li><a id="nav-orders" onclick="openOrdersModal()" style="display:none;">📦 My Orders</a></li>
+                <li><a id="nav-admin-link" href="admin.html" style="display:none; color: var(--primary-color);">⚙️ Admin Dashboard</a></li>
+                <li><a onclick="openCartModal()">🛒 Cart (<span id="cart-count">0</span>)</a></li>
+                <li><span id="user-welcome-msg" style="display:none; font-weight:600; color:var(--dark-color);"></span></li>
+                <li><a id="nav-auth-btn" onclick="openAuthModal()">👤 Login / Signup</a></li>
+                <li><a id="nav-logout-btn" onclick="logoutUser()" style="display:none; color:#dc3545;">🚪 Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Storefront Container -->
+    <div class="container">
+        <!-- Category Filter Chips Bar -->
+        <div id="category-chips" class="category-bar">
+            <!-- Dynamically populated categories -->
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="product-grid">
+            <!-- Dynamically populated products -->
+        </div>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Auth Modal (Login / Register) -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="auth-title" style="margin-bottom: 20px;">Login to Your Account</h2>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="auth-email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-password" placeholder="Enter your password">
+            </div>
+            <button id="auth-submit-btn" class="btn" onclick="handleAuthSubmit()">Login</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                <span id="auth-switch-text">Don't have an account?</span> 
+                <a onclick="toggleAuthMode()" style="color: var(--primary-color); cursor: pointer; font-weight: bold;">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeCartModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Your Shopping Cart</h2>
+            <div id="cart-items-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                <!-- Cart items load here -->
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #eee; padding-top: 15px; margin-bottom: 20px;">
+                <strong style="font-size: 18px;">Total:</strong>
+                <strong style="font-size: 20px; color: var(--primary-color);">$<span id="cart-total">0.00</span></strong>
+            </div>
+            <button class="btn" onclick="checkoutOrder()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Orders History Modal -->
+    <div id="orders-modal" class="modal">
+        <div class="modal-content" style="max-width: 650px;">
+            <span class="close-modal" onclick="closeOrdersModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">My Order History</h2>
+            <div id="orders-list-container" style="max-height: 400px; overflow-y: auto;">
+                <!-- Orders load here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeContactModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Contact Us</h2>
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="contact-name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label>Your Email</label>
+                <input type="email" id="contact-email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="contact-msg" rows="4" placeholder="How can we help you?"></textarea>
+            </div>
+            <button class="btn" onclick="submitContactForm()">Send Message</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs (Compat versions) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Custom Application Logic -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Shopping Online</title>
+    <style>
+        :root {
+            --primary-color: #ff416c;
+            --secondary-color: #ff4b2b;
+            --sidebar-width: 260px;
+            --dark-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --light-bg: #f8fafc;
+            --text-color: #334155;
+            --white: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark-bg);
+            color: var(--white);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-brand img {
+            height: 32px;
+            width: 32px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 14px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 15px;
+            color: #94a3b8;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--white);
+        }
+
+        .menu-item.active {
+            background: var(--sidebar-hover);
+            color: var(--white);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Main Content Area Styling */
+        #main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body.admin-logged-in #main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .admin-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #64748b;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" style="display:none;">
+        <div class="sidebar-brand">
+            <span>🛍️ Admin Panel</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" onclick="switchAdminTab('dashboard-tab', this)">📊 Dashboard</li>
+            <li class="menu-item" onclick="switchAdminTab('products-tab', this)">📦 Manage Products</li>
+            <li class="menu-item" onclick="switchAdminTab('categories-tab', this)">🏷️ Manage Categories</li>
+            <li class="menu-item" onclick="switchAdminTab('orders-tab', this)">🛍️ Manage Orders</li>
+            <li class="menu-item" onclick="switchAdminTab('users-tab', this)">👥 Manage Users</li>
+            <li class="menu-item" onclick="window.location.href='index.html'">🌐 View Storefront</li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logoutUser()">🚪 Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="main-content">
+        <div id="admin-main-container" style="display:none;">
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <h1 style="margin-bottom: 25px;">Dashboard Overview</h1>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>Total Products</h3>
+                        <p id="stat-total-products">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Categories</h3>
+                        <p id="stat-total-categories">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <p id="stat-total-orders">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Registered Users</h3>
+                        <p id="stat-total-users">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="products-tab" class="tab-content">
+                <div class="admin-card">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">Add New Product</h2>
+                    <div class="form-group">
+                        <label>Select Category</label>
+                        <select id="prod-category"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Title</label>
+                        <input type="text" id="prod-title" placeholder="e.g., Cute Kitty Spoon Set">
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="prod-price" placeholder="19.99">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="prod-desc" rows="3" placeholder="Enter description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Size Configuration Type</label>
+                        <select id="size-type-select" onchange="toggleSizeInputs()">
+                            <option value="none">No Size Required</option>
+                            <option value="checkbox">Standard (Checkbox - All Sizes Available)</option>
+                            <option value="manual">Manual Sizes (Comma separated)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="manual-size-group" style="display:none;">
+                        <label>Manual Sizes (e.g., S, M, L, XL)</label>
+                        <input type="text" id="prod-manual-sizes" placeholder="S, M, L, XL">
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Images (Min 2, Max 3 images)</label>
+                        <input type="file" id="prod-images" accept="image/*" multiple>
+                    </div>
+                    <button class="btn" onclick="handleAddProduct()">Save Product</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-size: 20px;">Existing Products</h2>
+                    <button class="btn btn-danger" onclick="deleteSelectedProducts()">🗑️ Delete Selected Products</button>
+                </div>
+                <div id="admin-products-list"></div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categories-tab" class="tab-content">
+                <div class="admin-card" style="max-width: 600px;">
+                    <h2 style="margin-bottom: 20px; font-size: 20px;">Add Category</h2>
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" id="cat-name" placeholder="e.g., Cute Cutlery Sets">
+                    </div>
+                    <button class="btn" onclick="handleAddCategory()">Add Category</button>
+                </div>
+                <div style="max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-size: 20px;">Categories List</h2>
+                    <button class="btn btn-danger" onclick="deleteSelectedCategories()">🗑️ Delete Selected Categories</button>
+                </div>
+                <div id="admin-categories-list" style="max-width: 800px;"></div>
+            </div>
+
+            <!-- Manage Orders Tab -->
+            <div id="orders-tab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-size: 20px;">Customer Orders</h2>
+                    <button class="btn btn-danger" onclick="deleteSelectedOrders()">🗑️ Delete Selected Orders</button>
+                </div>
+                <div id="admin-orders-list"></div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users-tab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-size: 20px;">Registered Users</h2>
+                    <button class="btn btn-danger" onclick="deleteSelectedUsers()">🗑️ Delete Selected Users</button>
+                </div>
+                <div id="admin-users-list"></div>
+            </div>
+        </div>
+
+        <!-- Direct Admin Login Container -->
+        <div id="admin-login-container" style="display:none; max-width: 420px; margin: 60px auto;">
+            <div class="admin-card">
+                <h2 style="text-align: center; margin-bottom: 20px; font-size: 22px;">Admin Login</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="admin-login-email" placeholder="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-login-password" placeholder="••••••••">
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 5px;" onclick="handleAdminDirectLogin()">Login to Admin Panel</button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-size: 14px; font-weight: 600;">← Back to Storefront</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        function switchAdminTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (element) element.classList.add('active');
+            if (tabId === 'dashboard-tab' && typeof loadDashboardStats === 'function') {
+                loadDashboardStats();
+            }
+            if (tabId === 'orders-tab' && typeof loadAdminOrders === 'function') {
+                loadAdminOrders();
+            }
+        }
+
+        async function handleAdminDirectLogin() {
+            const email = document.getElementById('admin-login-email').value;
+            const password = document.getElementById('admin-login-password').value;
+            if (!email || !password) {
+                showCustomAlert('Please enter email and password.');
+                return;
+            }
+            try {
+                const cred = await auth.signInWithEmailAndPassword(email, password);
+                const userDoc = await db.collection('users').doc(cred.user.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    showCustomAlert('Admin logged in successfully!');
+                    location.reload();
+                } else {
+                    await auth.signOut();
+                    showCustomAlert('Access Denied: You are not authorized as an admin.');
+                }
+            } catch (err) {
+                showCustomAlert(err.message);
+            }
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    document.body.classList.add('admin-logged-in');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
